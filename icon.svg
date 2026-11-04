@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#1565c0"/>
+  <rect x="64" y="96" width="384" height="352" rx="40" fill="#fff"/>
+  <path d="M64 136a40 40 0 0 1 40-40h304a40 40 0 0 1 40 40v64H64z" fill="#2e9e5b"/>
+  <rect x="148" y="56" width="28" height="72" rx="14" fill="#0d47a1"/>
+  <rect x="336" y="56" width="28" height="72" rx="14" fill="#0d47a1"/>
+  <text x="256" y="400" font-family="serif" font-size="190" font-weight="700" text-anchor="middle" fill="#1565c0">א</text>
+</svg>
