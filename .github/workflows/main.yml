@@ -1,1 +1,55 @@
+name: Build APK
 
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Locate project
+        id: proj
+        run: |
+          if [ -f android-project.zip ]; then
+            mkdir -p _proj && unzip -q android-project.zip -d _proj
+            echo "dir=_proj" >> "$GITHUB_OUTPUT"
+          else
+            echo "dir=." >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.9
+
+      - name: Build debug APK
+        working-directory: ${{ steps.proj.outputs.dir }}
+        run: gradle --no-daemon assembleDebug
+
+      - name: Publish APK to Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          cp "${{ steps.proj.outputs.dir }}/app/build/outputs/apk/debug/app-debug.apk" HebrewCalendar.apk
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest HebrewCalendar.apk \
+            --title "Hebrew Calendar (latest APK)" \
+            --notes "Debug-signed APK. Built from commit ${GITHUB_SHA::7}." \
+            --target "$GITHUB_SHA"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HebrewCalendar-apk
+          path: HebrewCalendar.apk
